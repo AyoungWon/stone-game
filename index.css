@@ -9,14 +9,21 @@
     display: flex;
 }
 
+
 .stage {
+    position: relative;
     width: 70%;
     height: 100%;
     border: 1px solid black;
     display: flex;
     justify-content: space-evenly;
 }
-
+.stage #turnBtn{
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(0%,-50%)!important;
+}
 .stage .hero-wrap {
     width: 16%;
     align-items: center;
@@ -31,9 +38,15 @@
     
 }
 
-.counter-zone .stage section {
-    align-items: flex-end;
+.stage .cost-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 10%;
+    border: 1px solid black;
 }
+
 
 .deck {
     width: 30%;
