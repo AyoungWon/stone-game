@@ -85,6 +85,10 @@
     justify-content: center;
     align-items: center;
 }
+
+.hero-wrap .card .img-wrap p {
+    display:none;
+}
 .card .stat {
     width: 90%;
     height: 30%;
