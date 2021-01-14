@@ -41,6 +41,10 @@
 .stage .card.selected {
     border: 3px solid red;
 }
+.stage .card.turnover {
+    background-color: #888;
+    
+}
 
 .stage .cost-wrap {
     position: absolute;

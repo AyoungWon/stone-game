@@ -4,6 +4,8 @@ var counter = {
     soldierArr:[],
     heroArr:[],
     deckarr:[],
+    selectedCard:null,
+    selectedData:null
 }
 var my = {
     zone:document.querySelector('.my-zone'),
@@ -11,6 +13,8 @@ var my = {
     soldierArr:[],
     heroArr:[],
     deckarr:[],
+    selectedCard:null,
+    selectedData:null
 }
 
 var stage = document.querySelector('.stage');
@@ -32,6 +36,7 @@ function Card(team, hero) {
         this.stage = true;
         return;
     } else {
+        this.hero = false;
         this.hp = Math.ceil(Math.random() * 5);
         this.att = Math.ceil(Math.random() * 5);
         this.cost = Math.floor((this.hp + this.att) / 2);
@@ -71,22 +76,35 @@ function cardMaking(data, team, wrap, arr, hero) {
         '</div>'
      //카드에 이벤트 붙이기   
     card.addEventListener('click', function (e) {
-        console.log(team)
         var idx = arr.indexOf(data);
         if (turn) {//내턴
             
             if (team === my.zone &&Number(my.cost.textContent) >= data.cost && data.stage === undefined) {
                deckClick(data,turn,arr,idx,wrap,team)
                 myDeck(1, my.deckarr, my.zone, '.deck');
-            }else if(team === my.zone && data.stage === true ){
+
+                //공격
+            }else if(team === my.zone && data.stage === true ){//내턴이고, 선택카드가 내카드이면서 스테이지에 있는 카드,
                 e.currentTarget.parentNode.parentNode.querySelectorAll('.card').forEach(function(card){
                     card.classList.remove('selected');
                 })
                 e.currentTarget.classList.add('selected');
-                
+                my.selectedCard = e.currentTarget;
+                my.selectedData = data;
+            }else if(my.selectedData && team === counter.zone){//내턴이고, 내카드를 선택해놓은 상태이에서 상대방 카드를 클릭했을때,
+                data.hp = data.hp - my.selectedData.att;
+                e.currentTarget.querySelector('.hp').textContent = data.hp;
+                my.selectedCard.classList.remove('selected')
+                my.selectedCard.classList.add('turnover')
 
-            } 
-            
+                if(data.hp <= 0 && data.hero === false){
+                    e.currentTarget.parentNode.removeChild(e.currentTarget);
+                    var idx = counter.soldierArr.indexOf(data)
+                    counter.soldierArr.splice(idx,1);
+                }else if(data.hp <= 0 && data.hero === true){
+                    console.log("승리")
+                }
+            }           
             else {
                 return;
             }
@@ -95,9 +113,22 @@ function cardMaking(data, team, wrap, arr, hero) {
             if (team === counter.zone &&Number(counter.cost.textContent) >= data.cost && data.stage === undefined) {
                 deckClick(data,turn,arr,idx,wrap,team)
                  myDeck(1, counter.deckarr, counter.zone, '.deck');
-             } else {
-                 return;
-             }
+             }else if(team === counter.zone && data.stage === true ){
+                e.currentTarget.parentNode.parentNode.querySelectorAll('.card').forEach(function(card){
+                    card.classList.remove('selected');
+                })
+                e.currentTarget.classList.add('selected');
+                counter.selectedCard = e.currentTarget;
+                counter.selectedData = data;
+            }else if(counter.selectedData && team === my.zone){
+                data.hp = data.hp -  counter.selectedData.att;
+                e.currentTarget.querySelector('.hp').textContent = data.hp;
+                counter.selectedCard.classList.remove('selected')
+                counter.selectedCard.classList.add('turnover')
+            }           
+            else {
+                return;
+            }
         }
     })
     team.querySelector(wrap).appendChild(card);
@@ -114,7 +145,6 @@ function counterHero(num, arr, team, wrap, hero) {
 function myHero(num, arr, team, wrap, hero) {
     var data = new Card(team, hero);
     arr.push(data);
-    console.log(data);
     cardMaking(data, team, wrap,arr,hero);
 
 }
@@ -154,17 +184,22 @@ function init() {
 
 turnBtn.addEventListener('click',function(){
     turn=!turn
+    document.querySelectorAll('.turnover').forEach(function(card){
+        card.classList.remove('turnover')
+    })
     if(turn === true){
         counter.cost.textContent="10"
-        my.zone.style.backgroundColor = "grey";
+        my.zone.style.backgroundColor = "yellow";
         counter.zone.style.backgroundColor = "white"
+        
         
     }
     else{
         
         my.cost.textContent="10";
-        counter.zone.style.backgroundColor = "grey";
+        counter.zone.style.backgroundColor = "yellow";
         my.zone.style.backgroundColor = "white";
+        
     }
 })
 
