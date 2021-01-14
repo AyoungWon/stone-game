@@ -38,6 +38,10 @@
     
 }
 
+.stage .card.selected {
+    border: 3px solid red;
+}
+
 .stage .cost-wrap {
     position: absolute;
     top: 0;

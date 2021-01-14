@@ -18,6 +18,7 @@ var heroWrap = document.querySelector('.hero-wrap');
 var turnBtn = document.querySelector('#turnBtn');
 var hero = true;
 var turn = true;
+var selectCount;
 
 
 function Card(team, hero) {
@@ -28,6 +29,7 @@ function Card(team, hero) {
         this.att = Math.ceil(Math.random() * 5);
         this.cost = Math.floor((this.hp + this.att) / 2);
         this.team = team;
+        this.stage = true;
         return;
     } else {
         this.hp = Math.ceil(Math.random() * 5);
@@ -40,7 +42,7 @@ function Card(team, hero) {
 
 function deckClick(data,turn,arr,idx,wrap,team){
     var player = turn ? my:counter;
-    data.soldier =true;
+    data.stage =true;
     player.cost.textContent = Number(player.cost.textContent)-data.cost
     player.soldierArr.push(data);
     arr.splice(idx, 1);
@@ -69,18 +71,28 @@ function cardMaking(data, team, wrap, arr, hero) {
         '</div>'
      //카드에 이벤트 붙이기   
     card.addEventListener('click', function (e) {
+        console.log(team)
         var idx = arr.indexOf(data);
         if (turn) {//내턴
             
-            if (team === my.zone &&Number(my.cost.textContent) >= data.cost && data.soldier === undefined) {
+            if (team === my.zone &&Number(my.cost.textContent) >= data.cost && data.stage === undefined) {
                deckClick(data,turn,arr,idx,wrap,team)
                 myDeck(1, my.deckarr, my.zone, '.deck');
-            } else {
+            }else if(team === my.zone && data.stage === true ){
+                e.currentTarget.parentNode.parentNode.querySelectorAll('.card').forEach(function(card){
+                    card.classList.remove('selected');
+                })
+                e.currentTarget.classList.add('selected');
+                
+
+            } 
+            
+            else {
                 return;
             }
 
         } else {//컴퓨터턴
-            if (team === counter.zone &&Number(counter.cost.textContent) >= data.cost && data.soldier === undefined) {
+            if (team === counter.zone &&Number(counter.cost.textContent) >= data.cost && data.stage === undefined) {
                 deckClick(data,turn,arr,idx,wrap,team)
                  myDeck(1, counter.deckarr, counter.zone, '.deck');
              } else {
@@ -94,14 +106,17 @@ function cardMaking(data, team, wrap, arr, hero) {
 
 function counterHero(num, arr, team, wrap, hero) {
     var data = new Card(team, hero);
-    cardMaking(data, team, wrap), hero;
+    arr.push(data);
+    cardMaking(data, team, wrap,arr,hero);
 }
 
 
 function myHero(num, arr, team, wrap, hero) {
     var data = new Card(team, hero);
+    arr.push(data);
     console.log(data);
-    cardMaking(data, team, wrap);
+    cardMaking(data, team, wrap,arr,hero);
+
 }
 
 function counterDeck(num, arr, team, wrap, hero) {
